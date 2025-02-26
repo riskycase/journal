@@ -1,3 +1,4 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript", "prettier"]
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
+  "@typescript-eslint/no-empty-object-type": "warn"
 }

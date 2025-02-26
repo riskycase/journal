@@ -24,7 +24,7 @@ export default function Editor({ date }: { date: Dayjs }) {
       setEntry(entry?.entry || "");
       setLoading(false);
     });
-  }, []);
+  }, [date]);
 
   function saveEntryToDatabase(entry: string) {
     setSaveState(SaveStates.SAVING);

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Input, Text } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import DatePicker from "./DatePicker";
 import { Dayjs } from "dayjs";
 import { Dispatch, SetStateAction } from "react";
