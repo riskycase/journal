@@ -1,4 +1,4 @@
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { Dispatch, SetStateAction, useState } from "react";
 import {
   PopoverContent,
@@ -38,6 +38,22 @@ export default function DatePicker({
 }) {
   const [currentDate, setCurrentDate] = useState(date);
   const [currentState, setCurrentState] = useState(DatePickerStates.DATE);
+
+  let startDate: Dayjs;
+
+  switch (currentState) {
+    case DatePickerStates.DATE:
+      startDate = currentDate.startOf("month");
+      break;
+    case DatePickerStates.MONTH:
+      startDate = currentDate.startOf("year");
+      break;
+    case DatePickerStates.YEAR:
+      let startYear = currentDate.year() - (currentDate.year() % 12) - 4;
+      if (currentDate.year() - startYear > 11) startYear += 12;
+      startDate = currentDate.startOf("year").year(startYear);
+      break;
+  }
 
   function prevButton() {
     switch (currentState) {
@@ -131,6 +147,7 @@ export default function DatePicker({
     <PopoverRoot
       onPointerDownOutside={() => {
         setCurrentState(DatePickerStates.DATE);
+        setCurrentDate(date);
       }}
     >
       <PopoverTrigger>
@@ -157,10 +174,14 @@ export default function DatePicker({
             justifyContent="space-between"
             padding={2}
           >
-            <IconButton variant="ghost" onClick={prevButton}>
+            <IconButton
+              variant="ghost"
+              onClick={prevButton}
+              disabled={startDate.isSame(dayjs("01/01/2000"))}
+            >
               <MdChevronLeft />
             </IconButton>
-            <Text
+            <Button
               fontSize="larger"
               onClick={() => {
                 if (currentState === DatePickerStates.DATE) {
@@ -169,9 +190,11 @@ export default function DatePicker({
                   setCurrentState(DatePickerStates.YEAR);
                 }
               }}
+              variant="subtle"
+              disabled={currentState === DatePickerStates.YEAR}
             >
               {getTitle()}
-            </Text>
+            </Button>
             <IconButton variant="ghost" onClick={nextButton}>
               <MdChevronRight />
             </IconButton>
@@ -190,12 +213,15 @@ export default function DatePicker({
               ))}
             {getElements().map((dateData, index) => (
               <Button
-                variant={
-                  dateData.style === "active"
-                    ? "solid"
-                    : "ghost"
+                variant={dateData.style === "active" ? "solid" : "ghost"}
+                color={
+                  dateData.style === "blur"
+                    ? "gray.500"
+                    : dateData.style === "active"
+                    ? "gray.700"
+                    : "gray.50"
                 }
-                color={dateData.style === "blur" ? "gray.500" : dateData.style === "active" ? "gray.700" : "gray.50"}
+                disabled={dateData.date.year() < 2000}
                 key={index}
                 onClick={() => {
                   setCurrentDate(dateData.date);
